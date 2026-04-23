@@ -121,6 +121,10 @@ button:hover {
 <div id="explanation"></div>
 
   <button onclick="nextQuestion()">次の問題</button>
+
+  <button onclick="showReview()">復習する</button>
+<div id="review"></div>
+
 </div>
 
 <script>
@@ -213,6 +217,7 @@ const colors = [
 
 let current;
 let score = 0;
+  let wrongList = [];
 
 function generateQuestion() {
   current = colors[Math.floor(Math.random() * colors.length)];
@@ -258,12 +263,39 @@ function checkAnswer(ans) {
   } else {
     document.getElementById("result").innerText =
       "❌ 不正解！ 正解は「" + current.name + "」";
+
+    wrongList.push({
+      name: current.name,
+      color: current.color,
+      hint: current.hint
+    });
   }
 
   document.getElementById("score").innerText = score;
   document.getElementById("explanation").innerText =
     "解説：" + current.ex;
 }
+
+function showReview() {
+  let html = "<h3>📚 間違えた問題</h3>";
+
+  if (wrongList.length === 0) {
+    html += "まだ間違いはありません✨";
+  } else {
+    wrongList.forEach(item => {
+      html += `
+        <div style="margin:10px; padding:10px; border-radius:10px; background:#fff;">
+          <div style="width:40px;height:40px;background:${item.color};border-radius:8px;margin:auto;"></div>
+          <div>${item.name}</div>
+          <div style="font-size:12px;">ヒント：${item.hint}</div>
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById("review").innerHTML = html;
+}
+  
 function nextQuestion() {
   generateQuestion();
 }
