@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>カラークイズ完全版</title>
+
+<style>
+body {
+  font-family: "Noto Sans JP", sans-serif;
+  background: linear-gradient(to right, #fff0f5, #e6f7ff);
+  text-align: center;
+  padding: 20px;
+}
+
+.container {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  max-width: 600px;
+  margin: auto;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+#colorBox {
+  width: 120px;
+  height: 120px;
+  margin: 20px auto;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+}
+
+.choice {
+  display: block;
+  margin: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.choice:hover {
+  background: #ffd1dc;
+}
+
+#result {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  background: #87cefa;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>🎨 カラークイズ完全版</h1>
+
+  <p>スコア：<span id="score">0</span></p>
+
+  <div id="colorBox"></div>
+  <div id="choices"></div>
+
+  <div id="result"></div>
+  <div id="explanation"></div>
+
+  <button onclick="nextQuestion()">次の問題</button>
+</div>
+
+<script>
+
+const colors = [
+  // 赤・ピンク
+  {name:"カーマイン",color:"#960018",hint:"深い赤",ex:"コチニール由来の赤"},
+  {name:"茜色",color:"#b7282e",hint:"暗い赤",ex:"植物染料の伝統色"},
+  {name:"ワインレッド",color:"#722f37",hint:"ワイン色",ex:"赤ワインのような色"},
+  {name:"牡丹色",color:"#e7609e",hint:"華やかなピンク",ex:"牡丹の花の色"},
+  {name:"桜色",color:"#ffd1dc",hint:"淡いピンク",ex:"桜の花の色"},
+  {name:"珊瑚色",color:"#ff7f7f",hint:"明るいピンク",ex:"サンゴの色"},
+  {name:"ピーチ",color:"#ffdab9",hint:"桃色",ex:"桃の果実の色"},
+  {name:"ベージュ",color:"#f5f5dc",hint:"薄茶",ex:"布の色"},
+  {name:"煉瓦色",color:"#b55239",hint:"赤茶",ex:"レンガの色"},
+  {name:"スカーレット",color:"#ff2400",hint:"鮮やかな赤",ex:"強い赤色"},
+  {name:"朱色",color:"#ef454a",hint:"黄み赤",ex:"日本の伝統色"},
+  {name:"ボルドー",color:"#6c2735",hint:"暗い赤",ex:"ワイン由来"},
+  {name:"ローズピンク",color:"#ff66cc",hint:"明るいピンク",ex:"バラの色"},
+  {name:"鴇色",color:"#f4a3b4",hint:"淡ピンク",ex:"鳥の羽色"},
+  {name:"サーモンピンク",color:"#fa8072",hint:"魚の色",ex:"鮭の身"},
+  {name:"ローズベージュ",color:"#e8c3c9",hint:"くすみピンク",ex:"落ち着いた色"},
+  {name:"テラコッタ",color:"#e2725b",hint:"赤土",ex:"焼いた土の色"},
+
+  // 茶・黄
+  {name:"ココア",color:"#6f4e37",hint:"薄茶",ex:"ココアの色"},
+  {name:"コーヒーブラウン",color:"#4b3621",hint:"濃茶",ex:"コーヒー色"},
+  {name:"黄丹",color:"#f6ae54",hint:"オレンジ",ex:"伝統色"},
+  {name:"山吹色",color:"#f8b500",hint:"黄色",ex:"山吹の花"},
+  {name:"鬱金色",color:"#e1ad21",hint:"黄土色",ex:"ウコン由来"},
+  {name:"キャメル",color:"#c19a6b",hint:"明茶",ex:"ラクダ色"},
+  {name:"チョコレート",color:"#3f2a1d",hint:"こげ茶",ex:"チョコ色"},
+  {name:"セピア",color:"#704214",hint:"暗茶",ex:"写真の色調"},
+  {name:"ジョンブリアン",color:"#ffcc00",hint:"明黄",ex:"絵具の色"},
+  {name:"レモンイエロー",color:"#fff44f",hint:"鮮黄",ex:"レモン色"},
+  {name:"芥子色",color:"#d0af4c",hint:"くすみ黄",ex:"からし色"},
+  {name:"カーキ",color:"#8b864e",hint:"軍色",ex:"軍服の色"},
+
+  // 緑
+  {name:"オリーブ",color:"#808000",hint:"くすみ緑",ex:"実の色"},
+  {name:"鶯色",color:"#928c36",hint:"黄緑",ex:"鳥の羽"},
+  {name:"萌黄色",color:"#aacf53",hint:"若葉色",ex:"春の色"},
+  {name:"モスグリーン",color:"#8a9a5b",hint:"苔色",ex:"落ち着いた緑"},
+  {name:"アップルグリーン",color:"#8db600",hint:"明緑",ex:"リンゴ色"},
+  {name:"エメラルド",color:"#50c878",hint:"宝石緑",ex:"宝石の色"},
+  {name:"マラカイトグリーン",color:"#0bda51",hint:"鮮緑",ex:"鉱石の色"},
+  {name:"ボトルグリーン",color:"#006a4e",hint:"濃緑",ex:"瓶の色"},
+  {name:"ビリジアン",color:"#40826d",hint:"青緑",ex:"顔料の色"},
+  {name:"ピーコックグリーン",color:"#006d5b",hint:"孔雀色",ex:"羽の色"},
+
+  // 青
+  {name:"青磁色",color:"#7ebea5",hint:"青緑",ex:"陶器の色"},
+  {name:"瓶覗",color:"#a2d7dd",hint:"淡青",ex:"薄い藍"},
+  {name:"浅葱色",color:"#00a3af",hint:"水色",ex:"染色の色"},
+  {name:"新橋色",color:"#59b9c6",hint:"明青",ex:"近代色"},
+  {name:"ベビーブルー",color:"#89cff0",hint:"淡青",ex:"赤ちゃんの色"},
+  {name:"スカイブルー",color:"#87ceeb",hint:"空色",ex:"空の色"},
+  {name:"藍色",color:"#165e83",hint:"濃青",ex:"植物染料"},
+  {name:"ターコイズブルー",color:"#40e0d0",hint:"青緑",ex:"トルコ石"},
+  {name:"マリンブルー",color:"#003366",hint:"海色",ex:"深い青"},
+  {name:"ウルトラマリンブルー",color:"#3f00ff",hint:"鮮青",ex:"顔料"},
+  {name:"群青色",color:"#1c39bb",hint:"濃青",ex:"岩絵具"},
+  {name:"ネイビーブルー",color:"#191970",hint:"紺色",ex:"海軍色"},
+
+  // 紫
+  {name:"江戸紫",color:"#6a0dad",hint:"青紫",ex:"江戸の色"},
+  {name:"京紫",color:"#7f00ff",hint:"赤紫",ex:"伝統色"},
+  {name:"バイオレット",color:"#8f00ff",hint:"濃紫",ex:"スペクトル色"},
+  {name:"モーブ",color:"#915f6d",hint:"くすみ紫",ex:"染料色"},
+  {name:"パープル",color:"#800080",hint:"紫",ex:"基本色"},
+  {name:"ラベンダー",color:"#e6e6fa",hint:"淡紫",ex:"花の色"},
+  {name:"ライラック",color:"#c8a2c8",hint:"薄紫",ex:"花の色"},
+  {name:"茄子紺",color:"#2c2c54",hint:"黒紫",ex:"ナス色"},
+  {name:"フューシャ",color:"#ff00ff",hint:"鮮紫",ex:"花の色"},
+
+  // 無彩色
+  {name:"スノーホワイト",color:"#ffffff",hint:"純白",ex:"雪の色"},
+  {name:"ミルクホワイト",color:"#fffff5",hint:"乳白",ex:"ミルク色"},
+  {name:"生成り色",color:"#f5f5dc",hint:"自然白",ex:"未加工布"},
+  {name:"アイボリー",color:"#fffff0",hint:"象牙色",ex:"柔らかい白"},
+  {name:"銀鼠",color:"#a0a0a0",hint:"灰色",ex:"明るいグレー"},
+  {name:"利休鼠",color:"#5f6a61",hint:"渋灰緑",ex:"茶の色"},
+  {name:"チャコールグレー",color:"#36454f",hint:"濃灰",ex:"炭色"},
+  {name:"漆黒",color:"#0d0d0d",hint:"黒",ex:"深い黒"}
+];
+
+let current;
+let score = 0;
+
+function generateQuestion() {
+  current = colors[Math.floor(Math.random() * colors.length)];
+
+  document.getElementById("colorBox").style.background = current.color;
+
+  let choices = [current.name];
+
+  while (choices.length < 4) {
+    let r = colors[Math.floor(Math.random() * colors.length)].name;
+    if (!choices.includes(r)) choices.push(r);
+  }
+
+  choices.sort(() => Math.random() - 0.5);
+
+  let html = "";
+  choices.forEach(c => {
+    html += `<button class="choice" onclick="checkAnswer('${c}')">${c}</button>`;
+  });
+
+  document.getElementById("choices").innerHTML = html;
+  document.getElementById("result").innerText = "";
+  document.getElementById("explanation").innerText = "";
+}
+
+function checkAnswer(ans) {
+  if (ans === current.name) {
+    score++;
+    document.getElementById("result").innerText = "⭕ 正解！";
+  } else {
+    document.getElementById("result").innerText =
+      "❌ 不正解！ 正解は「" + current.name + "」";
+  }
+
+  document.getElementById("score").innerText = score;
+  document.getElementById("explanation").innerText =
+    "ヒント：" + current.hint + " / 解説：" + current.ex;
+}
+
+function nextQuestion() {
+  generateQuestion();
+}
+
+generateQuestion();
+
+</script>
+
+</body>
+</html>
