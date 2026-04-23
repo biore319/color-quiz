@@ -68,6 +68,14 @@ button {
 
   <div id="colorBox"></div>
   <div id="choices"></div>
+  <div id="colorBox"></div>
+<div id="choices"></div>
+
+<button onclick="showHint()">ヒントを見る</button>
+<div id="hint"></div>
+
+<div id="result"></div>
+<div id="explanation"></div>
 
   <div id="result"></div>
   <div id="explanation"></div>
@@ -76,6 +84,10 @@ button {
 </div>
 
 <script>
+  function showHint() {
+  document.getElementById("hint").innerText =
+    "ヒント：" + current.hint;
+}
 
 const colors = [
   // 赤・ピンク
@@ -172,6 +184,7 @@ function generateQuestion() {
   while (choices.length < 4) {
     let r = colors[Math.floor(Math.random() * colors.length)].name;
     if (!choices.includes(r)) choices.push(r);
+    document.getElementById("hint").innerText = "";
   }
 
   choices.sort(() => Math.random() - 0.5);
