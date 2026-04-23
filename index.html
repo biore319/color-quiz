@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>慣用色名クイズ</title>
+<title>慣用色名クイズ 完全版</title>
 
 <style>
 body {
@@ -40,9 +40,7 @@ body {
   font-weight: bold;
 }
 
-.choice:hover {
-  background: #ffd1dc;
-}
+.choice:hover { background: #ffd1dc; }
 
 .correct { background: #b6f5c1; }
 .wrong { background: #ffb3b3; }
@@ -83,13 +81,55 @@ button {
 
 <script>
 
+// 🎨 全カラー（完全版）
 const colors = [
-  {name:"桜色",color:"#ffd1dc",hint:"淡いピンク",ex:"桜の花"},
-  {name:"山吹色",color:"#f8b500",hint:"黄色",ex:"山吹の花"},
-  {name:"藍色",color:"#165e83",hint:"濃い青",ex:"伝統色"},
-  {name:"エメラルド",color:"#50c878",hint:"宝石緑",ex:"宝石の色"},
-  {name:"ラベンダー",color:"#e6e6fa",hint:"薄紫",ex:"花の色"},
-  {name:"チャコールグレー",color:"#36454f",hint:"濃い灰色",ex:"炭の色"}
+{name:"カーマイン",color:"#960018",hint:"深い赤",ex:"コチニール由来"},
+{name:"茜色",color:"#b7282e",hint:"暗い赤",ex:"伝統色"},
+{name:"ワインレッド",color:"#722f37",hint:"ワイン色",ex:"赤ワイン"},
+{name:"牡丹色",color:"#e7609e",hint:"華やかピンク",ex:"花の色"},
+{name:"桜色",color:"#ffd1dc",hint:"淡いピンク",ex:"桜"},
+{name:"珊瑚色",color:"#ff7f7f",hint:"明るいピンク",ex:"サンゴ"},
+{name:"ピーチ",color:"#ffdab9",hint:"桃色",ex:"果実"},
+{name:"煉瓦色",color:"#b55239",hint:"赤茶",ex:"レンガ"},
+{name:"スカーレット",color:"#ff2400",hint:"鮮赤",ex:"強い赤"},
+{name:"朱色",color:"#ef454a",hint:"黄み赤",ex:"伝統色"},
+{name:"ボルドー",color:"#6c2735",hint:"暗赤",ex:"ワイン"},
+{name:"ローズピンク",color:"#ff66cc",hint:"明ピンク",ex:"バラ"},
+{name:"サーモンピンク",color:"#fa8072",hint:"魚色",ex:"鮭"},
+{name:"テラコッタ",color:"#e2725b",hint:"赤土",ex:"焼土"},
+
+{name:"ココア",color:"#6f4e37",hint:"茶色",ex:"飲み物"},
+{name:"コーヒーブラウン",color:"#4b3621",hint:"濃茶",ex:"コーヒー"},
+{name:"山吹色",color:"#f8b500",hint:"黄色",ex:"花"},
+{name:"鬱金色",color:"#e1ad21",hint:"黄土",ex:"ウコン"},
+{name:"キャメル",color:"#c19a6b",hint:"明茶",ex:"ラクダ"},
+{name:"チョコレート",color:"#3f2a1d",hint:"こげ茶",ex:"お菓子"},
+{name:"レモンイエロー",color:"#fff44f",hint:"鮮黄",ex:"果物"},
+{name:"カーキ",color:"#8b864e",hint:"軍色",ex:"軍服"},
+
+{name:"オリーブ",color:"#808000",hint:"くすみ緑",ex:"実"},
+{name:"萌黄色",color:"#aacf53",hint:"若葉",ex:"春"},
+{name:"モスグリーン",color:"#8a9a5b",hint:"苔色",ex:"落ち着き"},
+{name:"エメラルド",color:"#50c878",hint:"宝石緑",ex:"宝石"},
+{name:"ボトルグリーン",color:"#006a4e",hint:"濃緑",ex:"瓶"},
+{name:"ビリジアン",color:"#40826d",hint:"青緑",ex:"顔料"},
+
+{name:"スカイブルー",color:"#87ceeb",hint:"空色",ex:"空"},
+{name:"藍色",color:"#165e83",hint:"濃青",ex:"伝統"},
+{name:"ターコイズブルー",color:"#40e0d0",hint:"青緑",ex:"石"},
+{name:"マリンブルー",color:"#003366",hint:"海色",ex:"深海"},
+{name:"ネイビーブルー",color:"#191970",hint:"紺色",ex:"海軍"},
+
+{name:"江戸紫",color:"#6a0dad",hint:"青紫",ex:"江戸"},
+{name:"バイオレット",color:"#8f00ff",hint:"紫",ex:"光"},
+{name:"ラベンダー",color:"#e6e6fa",hint:"淡紫",ex:"花"},
+{name:"ライラック",color:"#c8a2c8",hint:"薄紫",ex:"花"},
+
+{name:"スノーホワイト",color:"#ffffff",hint:"白",ex:"雪"},
+{name:"アイボリー",color:"#fffff0",hint:"象牙",ex:"柔白"},
+{name:"銀鼠",color:"#a0a0a0",hint:"灰色",ex:"グレー"},
+{name:"チャコールグレー",color:"#36454f",hint:"濃灰",ex:"炭"},
+{name:"漆黒",color:"#0d0d0d",hint:"黒",ex:"深黒"}
 ];
 
 let current;
@@ -97,32 +137,37 @@ let score = 0;
 let wrongList = [];
 let reviewMode = false;
 let reviewIndex = 0;
+let lastQuestion = null;
 
+// ヒント
 function showHint() {
   document.getElementById("hint").innerText = "ヒント：" + current.hint;
 }
 
+// 問題生成
 function generateQuestion() {
-  if (reviewMode) {
-    loadReviewQuestion();
-    return;
-  }
+  if (reviewMode) return loadReviewQuestion();
 
-  current = colors[Math.floor(Math.random() * colors.length)];
+  do {
+    current = colors[Math.floor(Math.random() * colors.length)];
+  } while (current === lastQuestion);
+
+  lastQuestion = current;
   drawQuestion();
 }
 
+// 復習問題
 function loadReviewQuestion() {
   if (reviewIndex >= wrongList.length) {
     alert("復習おわり！");
     reviewMode = false;
     return;
   }
-
   current = wrongList[reviewIndex];
   drawQuestion();
 }
 
+// 描画
 function drawQuestion() {
   document.getElementById("colorBox").style.background = current.color;
   document.getElementById("hint").innerText = "";
@@ -146,6 +191,7 @@ function drawQuestion() {
   document.getElementById("explanation").innerText = "";
 }
 
+// 判定
 function checkAnswer(ans) {
   const buttons = document.querySelectorAll(".choice");
 
@@ -159,23 +205,22 @@ function checkAnswer(ans) {
     score++;
     document.getElementById("result").innerText = "⭕ 正解！";
   } else {
-    document.getElementById("result").innerText =
-      "❌ 正解は「" + current.name + "」";
-
+    document.getElementById("result").innerText = "❌ 正解は「" + current.name + "」";
     wrongList.push(current);
   }
 
   document.getElementById("score").innerText = score;
-  document.getElementById("explanation").innerText =
-    "解説：" + current.ex;
+  document.getElementById("explanation").innerText = "解説：" + current.ex;
 
   if (reviewMode) reviewIndex++;
 }
 
+// 次
 function nextQuestion() {
   generateQuestion();
 }
 
+// 間違い一覧
 function showReview() {
   let html = "<h3>📚 間違い一覧</h3>";
 
@@ -184,17 +229,17 @@ function showReview() {
   } else {
     wrongList.forEach(item => {
       html += `
-        <div style="margin:10px;padding:10px;background:#fff;border-radius:10px;">
-          <div style="width:40px;height:40px;background:${item.color};margin:auto;"></div>
-          <div>${item.name}</div>
-        </div>
-      `;
+      <div style="margin:10px;padding:10px;background:#fff;border-radius:10px;">
+        <div style="width:40px;height:40px;background:${item.color};margin:auto;"></div>
+        <div>${item.name}</div>
+      </div>`;
     });
   }
 
   document.getElementById("review").innerHTML = html;
 }
 
+// 復習モード開始
 function startReview() {
   if (wrongList.length === 0) {
     alert("復習する問題がないよ！");
