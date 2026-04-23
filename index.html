@@ -5,56 +5,94 @@
 <title>カラークイズ完全版</title>
 
 <style>
-body {
-  font-family: "Noto Sans JP", sans-serif;
-  background: linear-gradient(to right, #fff0f5, #e6f7ff);
+  body {
+  font-family: "Arial Rounded MT Bold", "Noto Sans JP", sans-serif;
+  background: linear-gradient(135deg, #ffe0ec, #d0f0ff);
   text-align: center;
   padding: 20px;
 }
 
 .container {
-  background: white;
-  border-radius: 20px;
-  padding: 25px;
-  max-width: 600px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  padding: 30px;
+  max-width: 420px;
   margin: auto;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform: translateY(10px);}
+  to {opacity:1; transform: translateY(0);}
+}
+
+h1 {
+  margin-bottom: 10px;
 }
 
 #colorBox {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   margin: 20px auto;
-  border-radius: 12px;
-  border: 1px solid #ccc;
+  border-radius: 15px;
+  border: 3px solid #fff;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .choice {
   display: block;
   margin: 8px;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   border: none;
-  background: #f0f0f0;
+  background: #f3f3f3;
   cursor: pointer;
+  transition: 0.25s;
+  font-size: 15px;
 }
 
 .choice:hover {
+  transform: scale(1.05);
   background: #ffd1dc;
 }
 
-#result {
-  font-weight: bold;
-  margin-top: 10px;
+.choice.correct {
+  background: #b6f5c1;
+}
+
+.choice.wrong {
+  background: #ffb3b3;
 }
 
 button {
-  margin-top: 15px;
+  margin-top: 12px;
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: none;
-  background: #87cefa;
+  background: linear-gradient(135deg, #87cefa, #ffb6c1);
+  color: white;
+  font-weight: bold;
   cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+#hint, #explanation {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f9f9f9;
+  font-size: 14px;
+}
+
+#result {
+  margin-top: 10px;
+  font-size: 18px;
 }
 </style>
 </head>
@@ -196,6 +234,17 @@ function generateQuestion() {
 }
 
 function checkAnswer(ans) {
+  const buttons = document.querySelectorAll(".choice");
+
+  buttons.forEach(btn => {
+    if (btn.innerText === current.name) {
+      btn.classList.add("correct");
+    } else if (btn.innerText === ans) {
+      btn.classList.add("wrong");
+    }
+    btn.disabled = true;
+  });
+
   if (ans === current.name) {
     score++;
     document.getElementById("result").innerText = "⭕ 正解！";
@@ -206,9 +255,8 @@ function checkAnswer(ans) {
 
   document.getElementById("score").innerText = score;
   document.getElementById("explanation").innerText =
-    "ヒント：" + current.hint + " / 解説：" + current.ex;
+    "解説：" + current.ex;
 }
-
 function nextQuestion() {
   generateQuestion();
 }
