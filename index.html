@@ -68,17 +68,12 @@ button {
 
   <div id="colorBox"></div>
   <div id="choices"></div>
-  <div id="colorBox"></div>
-<div id="choices"></div>
 
 <button onclick="showHint()">ヒントを見る</button>
 <div id="hint"></div>
 
 <div id="result"></div>
 <div id="explanation"></div>
-
-  <div id="result"></div>
-  <div id="explanation"></div>
 
   <button onclick="nextQuestion()">次の問題</button>
 </div>
@@ -179,12 +174,13 @@ function generateQuestion() {
 
   document.getElementById("colorBox").style.background = current.color;
 
+   document.getElementById("hint").innerText = "";
+
   let choices = [current.name];
 
   while (choices.length < 4) {
     let r = colors[Math.floor(Math.random() * colors.length)].name;
     if (!choices.includes(r)) choices.push(r);
-    document.getElementById("hint").innerText = "";
   }
 
   choices.sort(() => Math.random() - 0.5);
