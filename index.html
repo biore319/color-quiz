@@ -217,9 +217,6 @@ function drawQuestion() {
 
   let html = "";
   choices.forEach(c => {
-  let colorData = colors.find(col => col.name === c);
-  let textColor = getTextColor(colorData.color);
-
   html += `<button class="choice" onclick="checkAnswer('${c}')">
     ${c}
   </button>`;
