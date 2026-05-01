@@ -44,9 +44,27 @@ h1 {
   background: #f3f3f3;
   font-size: 16px;
   font-weight: bold;
-  color: #222;
+
+  color: #111; /* ← 濃くする */
+  text-shadow: none; /* ← これ消すと見やすくなる */
 }
 
+/* 正解 */
+.choice.correct {
+  background: #4ade80; /* はっきり緑 */
+  color: #003300;      /* 濃い文字 */
+}
+
+/* 不正解 */
+.choice.wrong {
+  background: #f87171; /* はっきり赤 */
+  color: #330000;      /* 濃い文字 */
+}
+
+/* ホバー（スマホでも一応） */
+.choice:hover {
+  background: #ffd1dc;
+}
 button {
   width: 100%;
   padding: 14px;
@@ -199,8 +217,15 @@ function drawQuestion() {
 
   let html = "";
   choices.forEach(c => {
-    html += `<button class="choice" onclick="checkAnswer('${c}')">${c}</button>`;
-  });
+  let colorData = colors.find(col => col.name === c);
+  let textColor = getTextColor(colorData.color);
+
+  html += `<button class="choice" 
+    style="background:${colorData.color}; color:${textColor}" 
+    onclick="checkAnswer('${c}')">
+    ${c}
+  </button>`;
+});
 
   document.getElementById("choices").innerHTML = html;
   document.getElementById("result").innerText = "";
