@@ -220,9 +220,7 @@ function drawQuestion() {
   let colorData = colors.find(col => col.name === c);
   let textColor = getTextColor(colorData.color);
 
-  html += `<button class="choice" 
-    style="background:${colorData.color}; color:${textColor}" 
-    onclick="checkAnswer('${c}')">
+  html += `<button class="choice" onclick="checkAnswer('${c}')">
     ${c}
   </button>`;
 });
